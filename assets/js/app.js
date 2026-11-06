@@ -54,7 +54,9 @@
 
   function parseInvite(value) {
     const raw = value.trim();
-    if (!raw) throw new Error('Paste the full invitation link.');
+    if (!raw) throw new Error('Enter your 32-character room code or paste the invitation link.');
+    const directCode = raw.replace(/[\\s-]/g, '').toUpperCase();
+    if (/^[A-F0-9]{32}$/.test(directCode)) return { room_code: directCode };
     let url;
     try {
       url = new URL(raw, window.location.href);
@@ -65,7 +67,7 @@
     const inviteToken = (url.searchParams.get('token') || '').trim();
     if (/^[A-F0-9]{32}$/.test(roomCode) && !inviteToken) return { room_code: roomCode };
     if (/^[A-F0-9]{8}$/.test(roomCode) && /^[a-f0-9]{64}$/i.test(inviteToken)) return { room_code: roomCode, invite_token: inviteToken };
-    throw new Error('Enter a valid 32-character room code or paste the complete invitation link.');
+    throw new Error('That code or invitation link is not valid. Enter the complete 32-character room code.');
   }
 
   async function api(action, payload = {}, options = {}) {
