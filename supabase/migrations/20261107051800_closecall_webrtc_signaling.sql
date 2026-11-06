@@ -17,3 +17,12 @@ create index if not exists closecall_signals_room_created_idx
 alter table public.closecall_signals enable row level security;
 revoke all on public.closecall_signals from anon, authenticated;
 grant all on public.closecall_signals to service_role;
+
+ 
+-- The room-code generator now issues 32-character hexadecimal credentials.
+-- Preserve compatibility with existing 8-character room codes/invitation URLs.
+alter table public.closecall_rooms
+  drop constraint if exists closecall_rooms_room_code_check;
+alter table public.closecall_rooms
+  add constraint closecall_rooms_room_code_check
+  check (room_code ~ '^([A-Z0-9]{8}|[A-F0-9]{32})$');
