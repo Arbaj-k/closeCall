@@ -1,47 +1,41 @@
-# CloseCall — Private video calling (Phase 1)
+# CloseCall — Private 1:1 room foundation
 
-A mobile-first frontend foundation for a private two-person video calling website.
+Mobile-first private room frontend using HTML, CSS, Vanilla JavaScript and a Supabase Edge Function.
 
-## Current status
+## Implemented
+- Create a private room through `closecall-api`.
+- Join with a full invitation URL containing the room code and high-entropy invite token.
+- Copy the secure invite link.
+- Store the participant token in tab-scoped `sessionStorage`, never in the URL.
+- Heartbeat every 45 seconds while the room is open, and immediately when the tab becomes visible.
+- Leave securely; the backend ends the room and invalidates further joins.
+- Restore the current tab's room session after refresh.
+- Clear invite query parameters after a guest exchanges the invite for a participant session.
+- Keep the current dark responsive landing page design.
 
-**Phase 1 only: responsive frontend and project structure.**
+## Supabase backend
+The frontend calls:
+`https://rpfnlkhcglewunflrarb.supabase.co/functions/v1/closecall-api`
 
-The landing page, create/join entry points, and temporary nickname dialog are implemented. The buttons intentionally stop before creating or joining a room. There are no mock video streams, fake room IDs, fake chat messages, or simulated connections.
+Supported actions: `create`, `join`, `heartbeat`, `leave`.
 
-## Project structure
+The Edge Function uses the server-side service-role key. No service-role key or Supabase secret is included in this repository or browser code. The function currently has wildcard CORS; before production, restrict it to the final CloseCall website origin.
 
-- `index.html` — landing page and nickname dialog.
-- `assets/css/main.css` — responsive dark-theme styling.
-- `assets/js/app.js` — frontend interactions and input validation.
-- `supabase/migrations/` — reserved for database migrations in Phase 2.
-- `supabase/functions/` — reserved for trusted backend operations in Phase 2.
+## Run
+Serve the repository as a static site over HTTPS (or localhost during development). No build step is required.
 
-## Run locally
+## Important current limits
+- This phase implements room lifecycle and participant authorization only.
+- The room page explicitly indicates that camera, microphone, peer presence and WebRTC media are not yet active.
+- There is no signaling or WebRTC connection in this commit. Do not treat the room session as a connected video call.
+- Room activity heartbeat keeps the room alive; the backend's expiry and 30-minute inactivity checks remain authoritative.
+- The host's Leave action ends the entire room. Guest leave also ends the room according to the current backend behavior.
+- The UI asks for a confirmation word/name before continuing, but the backend assigns a generated temporary nickname; the entered text is not sent or used.
 
-1. Extract the ZIP.
-2. Open the folder in VS Code.
-3. Use the VS Code Live Server extension, or run any static local web server.
-4. Open the local address in a modern browser.
-
-You can also open `index.html` directly for a quick visual preview. A local server is recommended for later browser APIs and development.
-
-## Next phases
-
-1. Supabase schema, RLS policies, and secure room authorization.
-2. Secure invitation token generation and atomic two-participant admission.
-3. Supabase Realtime signaling and WebRTC peer connection.
-4. WebRTC DataChannel chat and call controls.
-5. Expiry/cleanup and security testing.
-6. Real two-device testing before claiming calls work.
-
-## Configuration and security notes
-
-- Do not put a Supabase `service_role` key or any other secret in frontend JavaScript.
-- A Supabase project URL and publishable/anon key may be used in a browser only with correctly designed RLS policies. No Supabase credentials are configured in this Phase 1 scaffold.
-- Room creation, invitation validation, participant limits, and expiry must be enforced by trusted backend logic, not only by frontend checks.
-- Production WebRTC may require STUN and, for reliable connectivity across restrictive networks, TURN infrastructure. TURN credentials must be short-lived and issued securely.
-- Camera/microphone access requires HTTPS (localhost is generally treated as a secure context during development).
-
-## Verification
-
-Phase 1 is a static frontend. It has not been tested as a video calling system, and no real calling capability is claimed.
+## Test checklist
+1. Create a room and copy the invitation URL.
+2. Open the URL in a second browser/device and join.
+3. Confirm a third participant receives ROOM_FULL.
+4. Refresh each tab and confirm its session restores.
+5. Leave from either participant and confirm the other tab's next heartbeat reports the room ended.
+6. Test on HTTPS and on mobile browsers.
