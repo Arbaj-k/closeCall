@@ -74,7 +74,7 @@
   async function api(action, payload = {}, options = {}) {
     const response = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'apikey': 'sb_publishable_AETE-41nmBUUSrYBEfjzoQ_GUFSaM3M' },
       body: JSON.stringify({ action, ...payload }),
       signal: options.signal
     });
@@ -88,7 +88,7 @@
         INVALID_SESSION: 'Your room session is no longer valid. Please rejoin.',
         JOIN_FAILED: 'Could not join this room. Please try again.'
       };
-      const err = new Error(messages[data.error] || data.message || 'The room service could not complete that request.');
+      const err = new Error(messages[data.error] || data.message || (data.error ? 'Room API error: ' + data.error : 'The room service returned HTTP ' + response.status + '.'));
       err.status = response.status;
       err.code = data.error;
       throw err;
