@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090b12">
+  <meta name="referrer" content="no-referrer">
   <title>CloseCall — Private video rooms</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/main.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="assets/js/app.js"></script>
 </head>
 <body>
@@ -18,7 +18,7 @@
     <span class="top-note"><i></i> Private by design</span>
   </header>
 
-  <main class="hero-wrap">
+  <main id="home-view" class="hero-wrap">
     <section class="hero-copy">
       <div class="eyebrow"><span class="eyebrow-line"></span> FACE TO FACE, ANYWHERE</div>
       <h1>Good conversations<br>deserve <span>privacy.</span></h1>
@@ -29,8 +29,8 @@
         </button>
         <div class="separator"><span></span> OR JOIN A ROOM <span></span></div>
         <form id="join-form" class="join-form">
-          <label class="sr-only" for="invite-link">Invitation link or room code</label>
-          <input id="invite-link" name="invite" placeholder="Paste an invitation link or room code" autocomplete="off">
+          <label class="sr-only" for="invite-link">Secure invitation link</label>
+          <input id="invite-link" name="invite" placeholder="Paste the secure invitation link" autocomplete="off">
           <button type="submit" class="join-btn">Join room <span>→</span></button>
         </form>
         <p class="fine-print"><span class="lock">⌑</span> Calls are designed for two people. You control when your camera and microphone are on.</p>
@@ -53,6 +53,28 @@
       <div class="visual-caption">A little more personal.<br><strong>A lot less public.</strong></div>
     </aside>
   </main>
+
+  <main id="room-screen" class="room-shell" hidden>
+    <div class="room-heading">
+      <div><p class="eyebrow">PRIVATE ROOM</p><h1>Your room is ready.</h1><p class="room-subtitle">Share the secure invite with one person to let them enter.</p></div>
+      <button class="subtle-btn" id="back-home" type="button">← Home</button>
+    </div>
+    <section class="room-card">
+      <div class="room-topline"><span class="room-pill"><i></i> <span id="room-connection-status">Room session active</span></span><span id="room-role-label">Room host</span></div>
+      <div class="room-code-row"><div><small>ROOM CODE</small><strong id="room-code-display">--------</strong></div><div class="room-user"><span class="user-dot">●</span><span id="room-nickname">Guest</span></div></div>
+      <label class="invite-label" for="room-invite-link">SECURE INVITATION LINK</label>
+      <div class="invite-copy-row"><input id="room-invite-link" readonly><button id="copy-invite" type="button" class="copy-btn">Copy link</button></div>
+      <p class="room-expiry" id="room-expiry">Temporary private room</p>
+    </section>
+    <section class="call-placeholder">
+      <div class="call-placeholder-icon">◉</div>
+      <h2>Video calling is the next phase</h2>
+      <p>Your private room and participant session are connected to the backend. Camera, microphone, live peer status and WebRTC media are not active yet.</p>
+      <div class="call-placeholder-tags"><span>Room authorization active</span><span>Heartbeat active</span><span>2-person limit enforced</span></div>
+    </section>
+    <div class="room-actions"><span>Leaving ends this private room for everyone.</span><button id="leave-room" type="button" class="leave-btn">Leave room <span>×</span></button></div>
+  </main>
+
   <footer><span>© <span id="year"></span> CloseCall</span><span>Simple. Private. Personal.</span></footer>
 
   <dialog id="nickname-dialog" class="modal">
@@ -60,10 +82,10 @@
       <button class="modal-close" value="cancel" aria-label="Close">×</button>
       <div class="modal-icon">✳</div>
       <p class="eyebrow">BEFORE YOU ENTER</p>
-      <h2>What should we call you?</h2>
-      <p class="modal-copy">Choose a temporary nickname for this conversation.</p>
-      <label for="nickname">Your nickname</label>
-      <input id="nickname" maxlength="24" minlength="1" placeholder="e.g. Alex" required>
+      <h2>Ready to join?</h2>
+      <p class="modal-copy">CloseCall will assign a temporary nickname automatically for this conversation.</p>
+      <label for="nickname">Confirmation</label>
+      <input id="nickname" maxlength="24" minlength="1" placeholder="Type your name or any short word" required>
       <button class="primary-btn modal-submit" id="continue-room" value="default">Continue <span>→</span></button>
       <p class="modal-error" id="modal-error" role="alert"></p>
     </form>
