@@ -88,6 +88,10 @@
     const localVideo = $('#local-video'), remoteVideo = $('#remote-video');
     if (localVideo) localVideo.srcObject = null;
     if (remoteVideo) remoteVideo.srcObject = null;
+    $('#local-placeholder').hidden = false;
+    $('#remote-placeholder').hidden = false;
+    $('#camera-toggle').textContent = 'Turn camera off';
+    $('#mic-toggle').textContent = 'Mute microphone';
     $('#start-call').disabled = false;
     $('#start-call').textContent = 'Enable camera & microphone';
     $('#camera-toggle').disabled = true; $('#mic-toggle').disabled = true;
