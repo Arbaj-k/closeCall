@@ -11,7 +11,6 @@
   const joinForm = $('#join-form');
   const inviteInput = $('#invite-link');
   const dialog = $('#nickname-dialog');
-  const nicknameInput = $('#nickname');
   const continueButton = $('#continue-room');
   const error = $('#modal-error');
   const toast = $('#toast');
@@ -46,7 +45,6 @@
     intent = nextIntent;
     dialog.dataset.invite = invite;
     error.textContent = '';
-    nicknameInput.value = '';
     if (typeof dialog.showModal === 'function') {
       dialog.showModal();
     } else {
@@ -65,10 +63,9 @@
     }
     const roomCode = (url.searchParams.get('room') || '').trim().toUpperCase();
     const inviteToken = (url.searchParams.get('token') || '').trim();
-    if (!/^[A-F0-9]{8}$/.test(roomCode) || !/^[a-f0-9]{64}$/i.test(inviteToken)) {
-      throw new Error('Use the complete secure invitation link, not only the room code.');
-    }
-    return { room_code: roomCode, invite_token: inviteToken };
+    if (/^[A-F0-9]{32}$/.test(roomCode) && !inviteToken) return { room_code: roomCode };
+    if (/^[A-F0-9]{8}$/.test(roomCode) && /^[a-f0-9]{64}$/i.test(inviteToken)) return { room_code: roomCode, invite_token: inviteToken };
+    throw new Error('Enter a valid 32-character room code or paste the complete invitation link.');
   }
 
   async function api(action, payload = {}, options = {}) {
@@ -193,7 +190,7 @@
     const session = {
       room_id: data.room_id,
       room_code: data.room_code || invite.room_code,
-      invite_token: invite.invite_token,
+      invite_token: invite.invite_token || data.invite_token || null,
       participant_token: data.participant_token,
       nickname: data.nickname,
       status: data.status || 'active',
@@ -224,7 +221,7 @@
     const value = inviteInput.value.trim();
     if (!value) {
       inviteInput.focus();
-      notify('Paste the complete invitation link first.', true);
+      notify('Enter the room code or paste the secure invitation link.', true);
       return;
     }
     openNickname('join', value);
@@ -233,12 +230,6 @@
   continueButton.addEventListener('click', async (event) => {
     event.preventDefault();
     if (busy) return;
-    const nickname = nicknameInput.value.trim().replace(/\s+/g, ' ');
-    if (!nickname || nickname.length > 24 || /[<>]/.test(nickname)) {
-      error.textContent = 'Enter a nickname between 1 and 24 characters.';
-      nicknameInput.focus();
-      return;
-    }
     setBusy(true);
     error.textContent = '';
     try {
