@@ -211,8 +211,12 @@
     notify('You joined the private room. Video calling will be added in the WebRTC phase.');
   }
 
-  createButton.addEventListener('click', () => {
-    if (!busy) createRoom().catch(err => notify(err.message, true));
+  createButton.addEventListener('click', async () => {
+    if (busy) return;
+    setBusy(true);
+    try { await createRoom(); }
+    catch (err) { notify(err.message, true); }
+    finally { setBusy(false); }
   });
 
   joinForm.addEventListener('submit', (event) => {
