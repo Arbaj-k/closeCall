@@ -187,3 +187,14 @@ button{touch-action:manipulation}
   body.call-active .call-controls button{height:39px;min-height:39px;width:39px;min-width:39px}
   body.call-active .leave-btn{min-height:39px;padding:8px 16px}
 }
+
+/* Clearly visible front/back camera switch control */
+.call-controls .switch-control{width:auto;min-width:72px;padding:0 12px;border-radius:24px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:15px}
+.call-controls .switch-control span{font-size:10px;font-weight:700;letter-spacing:.2px}
+@media(max-width:650px){
+  .call-controls .switch-control{width:auto;min-width:68px;min-height:46px}
+  body.call-active .call-controls .switch-control{width:auto;min-width:68px;min-height:44px}
+}
+@media(max-width:390px){
+  body.call-active .call-controls .switch-control{width:auto;min-width:64px;min-height:42px}
+}
