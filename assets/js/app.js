@@ -313,6 +313,8 @@
       localStream.removeTrack(currentTrack);
       localStream.addTrack(nextTrack);
       $('#local-video').srcObject = localStream;
+      $('#local-video').style.transform = 'none';
+      $('#local-video').style.rotate = 'none';
       currentTrack.stop();
       const facing = nextTrack.getSettings().facingMode;
       const label = facing === 'environment' ? 'Back camera' : facing === 'user' ? 'Front camera' : 'Camera';
@@ -367,6 +369,8 @@
     try {
       localStream = await navigator.mediaDevices.getUserMedia({ audio:true, video:{ facingMode:'user', width:{ideal:1280}, height:{ideal:720} } });
       $('#local-video').srcObject = localStream;
+      $('#local-video').style.transform = 'none';
+      $('#local-video').style.rotate = 'none';
       $('#local-placeholder').hidden = true;
       $('#camera-toggle').disabled = false; $('#mic-toggle').disabled = false; $('#switch-camera').disabled = false;
       $('#camera-toggle').textContent = '▣';
