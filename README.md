@@ -46,3 +46,9 @@ The frontend polls the private signaling endpoint rather than using Supabase Rea
 - Add signaling cleanup for consumed/old rows (room cleanup cascades when rooms are deleted).
 - Verify two-device calls on mobile Safari, Chrome Android, desktop Chrome/Firefox, restrictive NAT and mobile data.
 - Consider a call reconnect/renegotiation flow for network changes and device switching.
+
+
+## TURN relay configuration (required for restrictive networks)
+The client now supports loading a provider-issued ICE server array at call start. Configure `window.CLOSECALL_TURN_CREDENTIAL_URL` in `assets/js/turn-config.js` with a credential-scoped endpoint that returns JSON in the WebRTC `iceServers` format (either an array or `{ "iceServers": [...] }`). Example format for Metered is documented at https://www.metered.ca/docs/turn-server-service/quickstart/. Use a credential-scoped API key only; never put a provider account secret or Supabase service-role key in this public repository.
+
+Without that provider URL and valid credentials, CloseCall deliberately falls back to STUN only. A code change cannot provision a real TURN relay or create a provider account/credential. After configuring the endpoint, verify relay candidates and calls from two separate restrictive/mobile networks.
