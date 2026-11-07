@@ -12,6 +12,9 @@ const cors = {
 };
 const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: cors });
 const randomHex = (n = 32) => [...crypto.getRandomValues(new Uint8Array(n))].map(x => x.toString(16).padStart(2, "0")).join("");
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const randomRoomCode = () => [...crypto.getRandomValues(new Uint8Array(5))]
+  .map(x => CODE_ALPHABET[x & 31]).join("");
 const hash = async (value: string) => {
   const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return [...new Uint8Array(bytes)].map(x => x.toString(16).padStart(2, "0")).join("");
@@ -57,15 +60,22 @@ Deno.serve(async (req: Request) => {
       if (!allowed) return reply({ error: "RATE_LIMITED" }, 429);
       const inviteToken = randomHex(32);
       const participantToken = randomHex(32);
-      const roomCode = randomHex(16).toUpperCase();
       const nickname = nick();
       const now = new Date();
       const expires = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
-      const { data: room, error: roomError } = await db.from("closecall_rooms").insert({
-        room_code: roomCode, invite_token_hash: await hash(inviteToken),
-        status: "waiting", last_activity_at: now.toISOString(), expires_at: expires,
-      }).select("id,room_code").single();
-      if (roomError) throw roomError;
+      let room: { id: string; room_code: string } | null = null;
+      let roomError: { code?: string; message?: string } | null = null;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const roomCode = randomRoomCode();
+        const created = await db.from("closecall_rooms").insert({
+          room_code: roomCode, invite_token_hash: await hash(inviteToken),
+          status: "waiting", last_activity_at: now.toISOString(), expires_at: expires,
+        }).select("id,room_code").single();
+        if (!created.error) { room = created.data; roomError = null; break; }
+        roomError = created.error;
+        if (created.error.code !== "23505") break;
+      }
+      if (roomError || !room) throw roomError || new Error("ROOM_CREATE_FAILED");
       const { error: participantError } = await db.from("closecall_participants").insert({
         room_id: room.id, slot: 1, participant_token_hash: await hash(participantToken), nickname,
       });
@@ -79,11 +89,15 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === "join") {
+      const ipHash = await hash(getIp(req));
+      const { data: joinAllowed, error: joinLimitError } = await db.rpc("closecall_allow_join", { p_ip_hash: ipHash });
+      if (joinLimitError) throw joinLimitError;
+      if (!joinAllowed) return reply({ error: "JOIN_RATE_LIMITED" }, 429);
       if (!valid(body.room_code, 32)) return reply({ error: "INVALID_INVITE" }, 400);
       const roomCode = body.room_code.trim().toUpperCase();
       let inviteHash: string;
       if (valid(body.invite_token, 128)) inviteHash = await hash(body.invite_token);
-      else if (/^[A-F0-9]{32}$/.test(roomCode)) {
+      else if (/^([A-Z0-9]{5}|[A-Z0-9]{8}|[A-F0-9]{32})$/.test(roomCode)) {
         const { data: roomRecord, error: roomLookupError } = await db.from("closecall_rooms")
           .select("invite_token_hash").eq("room_code", roomCode).maybeSingle();
         if (roomLookupError || !roomRecord) return reply({ error: "INVALID_INVITE" }, 404);
