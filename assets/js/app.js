@@ -123,16 +123,18 @@
     $('#mic-toggle').textContent = '♩'; $('#mic-toggle').title = 'Mute microphone';
     $('#start-call').disabled = false;
     $('#start-call').textContent = 'Enable camera & microphone';
-    $('#camera-toggle').disabled = true; $('#mic-toggle').disabled = true; $('#switch-camera').disabled = true; document.body.classList.remove('call-active');
+    $('#camera-toggle').disabled = true; $('#mic-toggle').disabled = true; $('#switch-camera').disabled = true; document.body.classList.remove('call-active','privacy-shield-active');
+    const shield = $('#privacy-shield'); if (shield) shield.hidden = true;
   }
   function clearSession() {
     stopTimers(); stopMedia(); currentSession = null; sessionStorage.removeItem(SESSION_KEY);
   }
-  function showHome() { roomScreen.hidden = true; home.hidden = false; document.body.classList.remove('in-room','call-active'); }
+  function showHome() { roomScreen.hidden = true; home.hidden = false; document.body.classList.remove('in-room','call-active','privacy-shield-active'); const shield = $('#privacy-shield'); if (shield) shield.hidden = true; }
   function setCallStatus(message) { $('#call-status').textContent = message; }
   function showRoom(session) {
     saveSession(session); home.hidden = true; roomScreen.hidden = false; document.body.classList.add('in-room'); document.body.classList.remove('call-active');
     $('#room-code-display').textContent = session.room_code;
+    const privacyCode = $('#privacy-room-code'); if (privacyCode) privacyCode.textContent = session.room_code || 'PRIVATE';
     $('#room-nickname').textContent = session.nickname || 'Guest';
     $('#room-role-label').textContent = session.slot === 1 ? 'Room host' : 'Invited guest';
     $('#room-invite-link').value = session.invite_token ? buildInviteLink(session) : 'Only the host can share the invitation link.';
@@ -443,7 +445,16 @@
   });
   $('#leave-room').addEventListener('click', leaveRoom);
   $('#back-home').addEventListener('click', () => notify('Use Leave room to securely end this session.'));
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && currentSession) heartbeat(); });
+  document.addEventListener('visibilitychange', () => {
+    const shield = $('#privacy-shield');
+    const inCall = !!currentSession && document.body.classList.contains('call-active');
+    if (shield && inCall) {
+      const hidden = document.visibilityState !== 'visible';
+      shield.hidden = !hidden;
+      document.body.classList.toggle('privacy-shield-active', hidden);
+    }
+    if (document.visibilityState === 'visible' && currentSession) heartbeat();
+  });
   dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
   let restoredSession = null;
   try {
