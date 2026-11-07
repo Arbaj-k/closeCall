@@ -15,20 +15,16 @@
   async function loadIceServers() {
     if (iceConfigPromise) return iceConfigPromise;
     iceConfigPromise = (async () => {
-      const credentialUrl = window.CLOSECALL_TURN_CREDENTIAL_URL;
-      if (!credentialUrl) return STUN_SERVERS;
       try {
-        const response = await fetch(credentialUrl, { method:'GET', cache:'no-store' });
-        if (!response.ok) throw new Error('TURN credential service returned HTTP ' + response.status);
-        const data = await response.json();
-        const servers = Array.isArray(data) ? data : data.iceServers;
+        const data = await api('turn_credentials');
+        const servers = data.iceServers;
         if (!Array.isArray(servers) || !servers.length ||
             !servers.some(server => {
               const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
               return urls.some(url => typeof url === 'string' && /^turns?:/i.test(url));
             })) throw new Error('TURN credential response did not include a TURN server.');
         ICE_SERVERS = [...servers, ...STUN_SERVERS];
-        console.info('CloseCall: TURN relay configuration loaded.');
+        console.info('CloseCall: TURN relay configuration loaded securely.');
         return ICE_SERVERS;
       } catch (err) {
         console.error('CloseCall TURN setup unavailable; using STUN fallback:', err);
