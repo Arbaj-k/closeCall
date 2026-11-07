@@ -68,3 +68,6 @@ body.call-active .call-controls .call-start-btn{width:auto;height:42px}
 body.call-active .room-actions>span{display:none}
 }
 @media(max-width:380px){.top-nav a{font-size:9px}.hero-copy h1{font-size:41px}.entry-card{padding:16px}.join-btn{padding:0 12px}.privacy-grid{grid-template-columns:1fr}.code-copy-row strong{letter-spacing:5px}.call-controls{gap:6px}.call-controls button{height:40px;width:40px}.call-controls .call-start-btn{padding:0 10px}}
+
+body.in-room .site-footer{display:none}
+body.in-room #home-view{display:none}
