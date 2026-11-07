@@ -71,3 +71,118 @@ body.call-active .room-actions>span{display:none}
 
 body.in-room .site-footer{display:none}
 body.in-room #home-view{display:none}
+
+
+/* Mobile-first refinements: compact navigation, thumb-friendly actions, safe-area aware call stage */
+html,body{max-width:100%;overflow-x:hidden}
+button,a,input{-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation}
+@media(max-width:650px){
+  .topbar{height:58px;padding:0 16px;position:sticky;top:0}
+  .brand{font-size:17px}
+  .top-nav{gap:13px;margin-left:auto}
+  .top-nav a{font-size:10px}
+  .hero-wrap{width:calc(100% - 36px);padding:38px 0 35px;gap:23px}
+  .hero-copy h1{font-size:clamp(42px,12vw,55px);line-height:1.06;letter-spacing:-2.7px;margin:18px 0 14px}
+  .eyebrow{font-size:9px;letter-spacing:1.4px}
+  .intro{font-size:12px;line-height:1.75}
+  .trust-points{gap:9px 13px;margin-top:17px}
+  .trust-points span{font-size:9px}
+  .entry-card{padding:17px;border-radius:14px}
+  .entry-card-top{gap:10px;margin-bottom:17px}
+  .entry-card-top strong{font-size:14px}
+  .entry-card-top small{font-size:10px}
+  .create-room-btn{height:48px}
+  .join-input-row{gap:4px}
+  .join-input-row input{font-size:11px;padding:10px 7px}
+  .join-btn{padding:0 12px}
+  .hero-visual{height:225px;margin-top:0}
+  .visual-window{width:88%;height:205px}
+  .visual-person{height:130px}
+  .floating-note{right:0;bottom:-2px;padding:9px 11px}
+  .steps-section,.privacy-section{width:calc(100% - 36px);padding:36px 0}
+  .section-heading{margin-bottom:20px}
+  .section-heading h2{font-size:24px}
+  .steps-grid{gap:9px}
+  .step-card{padding:16px}
+  .step-card h3{font-size:13px}
+  .step-card p,.privacy-grid p{font-size:10px}
+  .privacy-grid{gap:8px}
+  .privacy-grid article{padding:14px 12px}
+  .privacy-grid h3{font-size:11px}
+  .privacy-note{font-size:9px}
+  .site-footer{min-height:55px;gap:10px;padding:14px 18px}
+  .site-footer div{gap:13px}
+  .room-shell{width:calc(100% - 24px);padding:12px 0 calc(16px + env(safe-area-inset-bottom))}
+  .room-heading{align-items:flex-start;margin:0 1px 12px;gap:8px}
+  .room-heading h1{font-size:22px;margin:6px 0 4px}
+  .room-subtitle{font-size:10px;max-width:235px}
+  .subtle-btn{padding:9px 10px;white-space:nowrap}
+  .room-layout{display:flex;flex-direction:column;gap:10px}
+  .video-call-panel{padding:9px;border-radius:13px}
+  .call-toolbar{padding:2px 2px 9px;font-size:9px}
+  .call-toolbar #peer-state{font-size:8px;text-align:right}
+  .video-grid{min-height:0;flex:none}
+  .local-tile{height:auto;min-height:0;aspect-ratio:16/10}
+  .video-tile label{left:8px;bottom:8px;font-size:7px}
+  .video-placeholder{gap:5px}
+  .video-placeholder .person-outline{font-size:34px}
+  .video-placeholder strong{font-size:11px}
+  .video-placeholder small{font-size:9px}
+  .call-controls{display:flex;flex-wrap:wrap;gap:9px;padding:11px 0 1px}
+  .call-controls button{width:46px;height:46px;min-width:46px;min-height:46px}
+  .call-controls .call-start-btn{flex:1 1 100%;height:44px;min-height:44px;border-radius:12px;margin-top:2px;font-size:11px}
+  .call-note{font-size:8px;margin:7px 0 0}
+  .room-card{padding:16px;border-radius:13px}
+  .room-card-heading{gap:10px;margin-bottom:16px}
+  .room-card-icon{width:36px;height:36px}
+  .room-card-heading h2{font-size:15px}
+  .room-card-heading p{font-size:9px}
+  .invite-block{margin-bottom:17px}
+  .invite-label{font-size:9px}
+  .invite-copy-row{gap:6px}
+  .invite-copy-row input{padding:12px 9px;font-size:10px}
+  .copy-btn{padding:0 12px;font-size:10px}
+  .code-copy-row{gap:8px}
+  .code-copy-row strong{font-size:24px;letter-spacing:6px}
+  .copy-code-btn{padding:10px 12px}
+  .room-waiting{padding-top:15px;font-size:10px}
+  .room-expiry{font-size:9px}
+  .room-security{margin-top:13px;padding:10px}
+  .room-actions{display:flex;flex-direction:column-reverse;gap:9px;margin:10px 0 0}
+  .room-actions>span{max-width:none;text-align:center;font-size:8px}
+  .leave-btn{width:100%;min-height:46px;justify-content:center;border-radius:12px}
+  body.call-active .topbar{height:54px;padding:0 13px}
+  body.call-active .room-shell{width:100%;height:calc(100dvh - 54px - env(safe-area-inset-top));min-height:0;padding:6px 9px calc(8px + env(safe-area-inset-bottom));}
+  body.call-active .room-layout{height:100%;min-height:0;display:block}
+  body.call-active .video-call-panel{height:100%;min-height:0;padding:0;display:flex;flex-direction:column}
+  body.call-active .video-grid{height:100%;min-height:0;flex:1}
+  body.call-active .remote-tile{height:100%;min-height:0;border-radius:13px}
+  body.call-active .local-tile{right:10px;bottom:10px;width:31%;min-width:100px;max-width:145px;aspect-ratio:4/3;border-radius:10px}
+  body.call-active .call-controls{flex:0 0 auto;gap:10px;padding:9px 0 0;flex-wrap:nowrap}
+  body.call-active .call-controls button{width:44px;height:44px;min-width:44px;min-height:44px}
+  body.call-active .call-controls .call-start-btn{display:none}
+  body.call-active .room-actions{flex:0 0 auto;margin:8px 0 0}
+  body.call-active .leave-btn{width:min(100%,250px);min-height:45px;padding:11px 18px;border-radius:24px}
+  body.call-active .room-actions>span{display:none}
+}
+@media(max-width:390px){
+  .top-nav{gap:10px}
+  .top-nav a{font-size:9px}
+  .hero-wrap{width:calc(100% - 30px)}
+  .hero-copy h1{font-size:41px;letter-spacing:-2.3px}
+  .trust-points{gap:8px}
+  .entry-card{padding:14px}
+  .join-input-row input{font-size:10px}
+  .join-btn{font-size:10px;padding:0 9px}
+  .code-copy-row strong{font-size:21px;letter-spacing:5px}
+  .copy-code-btn{font-size:9px;padding:9px}
+  body.call-active .call-controls{gap:7px}
+  body.call-active .call-controls button{width:42px;height:42px;min-width:42px;min-height:42px}
+}
+@media(max-height:650px) and (max-width:650px){
+  body.call-active .room-shell{height:calc(100dvh - 54px - env(safe-area-inset-top));}
+  body.call-active .call-controls{padding-top:6px}
+  body.call-active .call-controls button{height:39px;min-height:39px;width:39px;min-width:39px}
+  body.call-active .leave-btn{min-height:39px;padding:8px 16px}
+}
