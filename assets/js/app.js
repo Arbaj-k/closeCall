@@ -369,8 +369,8 @@
       $('#local-video').srcObject = localStream;
       $('#local-placeholder').hidden = true;
       $('#camera-toggle').disabled = false; $('#mic-toggle').disabled = false; $('#switch-camera').disabled = false;
-      $('#camera-toggle').textContent = 'Turn camera off';
-      $('#mic-toggle').textContent = 'Mute microphone';
+      $('#camera-toggle').textContent = '▣';
+      $('#mic-toggle').textContent = '♩';
       if (currentSession.slot === 2) await createPeerConnection();
       if (currentSession.slot === 2 && pendingOffer) {
         const offer = pendingOffer; pendingOffer = null;
