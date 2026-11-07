@@ -123,7 +123,7 @@
     $('#mic-toggle').textContent = 'Mute microphone';
     $('#start-call').disabled = false;
     $('#start-call').textContent = 'Enable camera & microphone';
-    $('#camera-toggle').disabled = true; $('#mic-toggle').disabled = true;
+    $('#camera-toggle').disabled = true; $('#mic-toggle').disabled = true; $('#switch-camera').disabled = true;
   }
   function clearSession() {
     stopTimers(); stopMedia(); currentSession = null; sessionStorage.removeItem(SESSION_KEY);
@@ -275,6 +275,37 @@
     statusTimer = setInterval(checkPeer, STATUS_POLL_MS);
     signalTimer = setInterval(pollSignals, SIGNAL_POLL_MS);
   }
+  async function switchCamera() {
+    if (!localStream) return;
+    const currentTrack = localStream.getVideoTracks()[0];
+    if (!currentTrack) return;
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cameras = devices.filter(device => device.kind === 'videoinput');
+    if (cameras.length < 2) { notify('Only one camera is available on this device.', true); return; }
+    const currentId = currentTrack.getSettings().deviceId;
+    const currentIndex = cameras.findIndex(device => device.deviceId === currentId);
+    const nextCamera = cameras[(currentIndex + 1 + cameras.length) % cameras.length];
+    const nextStream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: nextCamera.deviceId ? { deviceId: { exact: nextCamera.deviceId } } :
+        { facingMode: currentTrack.getSettings().facingMode === 'environment' ? 'user' : 'environment' }
+    });
+    const nextTrack = nextStream.getVideoTracks()[0];
+    try {
+      const sender = peerConnection?.getSenders().find(item => item.track?.kind === 'video');
+      if (sender) await sender.replaceTrack(nextTrack);
+      const oldStream = localStream;
+      oldStream.removeTrack(currentTrack);
+      oldStream.addTrack(nextTrack);
+      $('#local-video').srcObject = localStream;
+      currentTrack.stop();
+      nextStream.getTracks().filter(track => track !== nextTrack).forEach(track => track.stop());
+      notify('Camera switched.');
+    } catch (err) {
+      nextStream.getTracks().forEach(track => track.stop());
+      notify('Could not switch camera: ' + err.message, true);
+    }
+  }
   async function startCall() {
     if (!currentSession || localStream) return;
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -285,7 +316,7 @@
       localStream = await navigator.mediaDevices.getUserMedia({ audio:true, video:{ facingMode:'user', width:{ideal:1280}, height:{ideal:720} } });
       $('#local-video').srcObject = localStream;
       $('#local-placeholder').hidden = true;
-      $('#camera-toggle').disabled = false; $('#mic-toggle').disabled = false;
+      $('#camera-toggle').disabled = false; $('#mic-toggle').disabled = false; $('#switch-camera').disabled = false;
       $('#camera-toggle').textContent = 'Turn camera off';
       $('#mic-toggle').textContent = 'Mute microphone';
       if (currentSession.slot === 2) await createPeerConnection();
@@ -332,6 +363,7 @@
     finally { setBusy(false); }
   });
   $('#start-call').addEventListener('click', startCall);
+  $('#switch-camera').addEventListener('click', () => switchCamera().catch(e => notify('Camera switch failed: ' + e.message, true)));
   $('#camera-toggle').addEventListener('click', () => {
     if (!localStream) return;
     const track = localStream.getVideoTracks()[0]; if (!track) return;
