@@ -203,11 +203,70 @@ button{touch-action:manipulation}
 .video-grid{position:relative;overflow:hidden}
 .local-tile{width:clamp(112px,14vw,156px);height:auto;aspect-ratio:3/4;min-height:0;max-height:62%;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;z-index:5;box-shadow:0 12px 34px #000b;border:1px solid #ffffff45}
 .local-tile:active{cursor:grabbing}
-.local-tile video{width:100%;height:100%;object-fit:cover;pointer-events:none;transform:rotate(180deg)}
+.local-tile video{width:100%;height:100%;object-fit:cover;pointer-events:none;transform:none}
 .local-tile label{pointer-events:none}
 @media(max-width:650px){
   body.call-active .local-tile{width:clamp(96px,28vw,124px);min-width:96px;max-width:124px;height:auto;min-height:0;aspect-ratio:3/4;max-height:50%;right:10px;bottom:10px}
 }
 @media(max-width:380px){
   body.call-active .local-tile{width:92px;min-width:92px;max-width:92px;aspect-ratio:3/4}
+}
+
+
+/* Refined mobile calling layout */
+@media(max-width:650px){
+  body.call-active{overflow:hidden;background:#080c10}
+  body.call-active .topbar{display:none}
+  body.call-active .room-shell{
+    width:100%;height:100dvh;min-height:100dvh;
+    padding:calc(8px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;overflow:hidden
+  }
+  body.call-active .room-heading{display:none}
+  body.call-active .room-layout{display:flex;flex:1;min-height:0;height:auto}
+  body.call-active .video-call-panel{
+    flex:1;min-height:0;height:auto;padding:0;border:0;border-radius:0;
+    background:transparent;box-shadow:none;display:flex;flex-direction:column
+  }
+  body.call-active .call-toolbar{flex:0 0 auto;padding:4px 3px 10px;min-height:34px}
+  body.call-active .call-toolbar #call-status{font-size:10px}
+  body.call-active .call-toolbar #peer-state{font-size:9px;max-width:42%;line-height:1.35}
+  body.call-active .video-grid{
+    flex:1;min-height:0;height:auto;border-radius:16px;overflow:hidden;
+    background:#11181d;border:1px solid #303a40
+  }
+  body.call-active .remote-tile{height:100%;min-height:0;border:0;border-radius:15px}
+  body.call-active .remote-tile video{object-fit:cover}
+  body.call-active .local-tile{
+    width:clamp(104px,29vw,132px);min-width:104px;max-width:132px;
+    height:auto;min-height:0;aspect-ratio:3/4;max-height:42%;
+    right:12px;bottom:12px;border-radius:13px;overflow:hidden
+  }
+  body.call-active .local-tile video{object-fit:cover;transform:none}
+  body.call-active .local-tile label{left:7px;bottom:7px;font-size:8px;padding:5px 7px}
+  body.call-active .call-controls{
+    flex:0 0 auto;display:flex;justify-content:center;align-items:center;
+    flex-wrap:nowrap;gap:clamp(12px,5vw,22px);padding:14px 4px 5px
+  }
+  body.call-active .call-controls button,
+  body.call-active .call-controls .switch-control{
+    width:54px;height:54px;min-width:54px;min-height:54px;
+    padding:0;border-radius:50%;font-size:21px;line-height:1;
+    display:grid;place-items:center;flex:0 0 54px
+  }
+  body.call-active .call-controls button:disabled{opacity:.42}
+  body.call-active .call-controls .switch-control{font-size:22px}
+  body.call-active .call-controls .switch-control span{display:none}
+  body.call-active .call-controls .call-start-btn{display:none}
+  body.call-active .call-note{display:none}
+  body.call-active .room-actions{flex:0 0 auto;margin:9px 0 0;padding:0}
+  body.call-active .leave-btn{width:100%;max-width:none;min-height:52px;border-radius:16px;font-size:13px}
+}
+@media(max-width:380px){
+  body.call-active .call-controls{gap:12px;padding-top:11px}
+  body.call-active .call-controls button,
+  body.call-active .call-controls .switch-control{
+    width:50px;height:50px;min-width:50px;min-height:50px;flex-basis:50px
+  }
+  body.call-active .leave-btn{min-height:48px}
 }
