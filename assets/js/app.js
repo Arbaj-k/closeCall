@@ -5,7 +5,39 @@
   const API_KEY = 'sb_publishable_AETE-41nmBUUSrYBEfjzoQ_GUFSaM3M';
   const SESSION_KEY = 'closecall.session.v1';
   const HEARTBEAT_MS = 45000, SIGNAL_POLL_MS = 900, STATUS_POLL_MS = 2500;
-  const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }];
+  const STUN_SERVERS = [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' }
+  ];
+  let ICE_SERVERS = STUN_SERVERS;
+  let iceConfigPromise = null;
+  async function loadIceServers() {
+    if (iceConfigPromise) return iceConfigPromise;
+    iceConfigPromise = (async () => {
+      const credentialUrl = window.CLOSECALL_TURN_CREDENTIAL_URL;
+      if (!credentialUrl) return STUN_SERVERS;
+      try {
+        const response = await fetch(credentialUrl, { method:'GET', cache:'no-store' });
+        if (!response.ok) throw new Error('TURN credential service returned HTTP ' + response.status);
+        const data = await response.json();
+        const servers = Array.isArray(data) ? data : data.iceServers;
+        if (!Array.isArray(servers) || !servers.length ||
+            !servers.some(server => {
+              const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
+              return urls.some(url => typeof url === 'string' && /^turns?:/i.test(url));
+            })) throw new Error('TURN credential response did not include a TURN server.');
+        ICE_SERVERS = [...servers, ...STUN_SERVERS];
+        console.info('CloseCall: TURN relay configuration loaded.');
+        return ICE_SERVERS;
+      } catch (err) {
+        console.error('CloseCall TURN setup unavailable; using STUN fallback:', err);
+        notify('TURN relay could not be loaded. Trying a direct connection instead.', true);
+        return STUN_SERVERS;
+      }
+    })();
+    return iceConfigPromise;
+  }
   const $ = s => document.querySelector(s);
   const createButton = $('#create-room'), joinForm = $('#join-form'), inviteInput = $('#invite-link');
   const dialog = $('#nickname-dialog'), continueButton = $('#continue-room'), error = $('#modal-error');
@@ -145,7 +177,7 @@
         $('#peer-name').textContent = d.peer_nickname || 'Guest';
         $('#peer-state').textContent = 'Participant connected';
         if (localStream && currentSession.slot === 1 && !offerStarted && !makingOffer) await createOffer();
-        if (localStream && currentSession.slot === 2 && !peerConnection) createPeerConnection();
+        if (localStream && currentSession.slot === 2 && !peerConnection) await createPeerConnection();
         if (!localStream) setCallStatus('The other person is here. Enable camera and microphone to begin.');
       } else {
         $('#peer-name').textContent = 'Waiting for guest';
@@ -160,9 +192,10 @@
     if (!currentSession) return;
     await api('signal_send', { ...sessionPayload(), signal_type:type, payload });
   }
-  function createPeerConnection() {
+  async function createPeerConnection() {
     if (peerConnection) return peerConnection;
-    peerConnection = new RTCPeerConnection({ iceServers:ICE_SERVERS });
+    const iceServers = await loadIceServers();
+    peerConnection = new RTCPeerConnection({ iceServers, iceTransportPolicy:'all' });
     if (localStream) localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
     peerConnection.onicecandidate = event => {
       if (event.candidate) sendSignal('ice', event.candidate.toJSON()).catch(e => notify('Network candidate could not be sent: ' + e.message, true));
@@ -195,7 +228,7 @@
     if (!localStream || currentSession.slot !== 1 || offerStarted || makingOffer) return;
     makingOffer = true;
     try {
-      const pc = createPeerConnection();
+      const pc = await createPeerConnection();
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
       await sendSignal('offer', { type:pc.localDescription.type, sdp:pc.localDescription.sdp });
@@ -214,7 +247,7 @@
       return;
     }
     if (signal.signal_type === 'offer' && currentSession.slot === 2) {
-      const pc = createPeerConnection();
+      const pc = await createPeerConnection();
       await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
       await drainIce();
       const answer = await pc.createAnswer(); await pc.setLocalDescription(answer);
@@ -256,7 +289,7 @@
       $('#camera-toggle').disabled = false; $('#mic-toggle').disabled = false;
       $('#camera-toggle').textContent = 'Turn camera off';
       $('#mic-toggle').textContent = 'Mute microphone';
-      if (currentSession.slot === 2) createPeerConnection();
+      if (currentSession.slot === 2) await createPeerConnection();
       await checkPeer();
       setCallStatus('Camera and microphone ready. Waiting for peer connection…');
       notify('Camera and microphone enabled.');
