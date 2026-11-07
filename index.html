@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090b12">
+  <meta name="theme-color" content="#0d1012">
   <meta name="referrer" content="no-referrer">
-  <title>CloseCall — Private video rooms</title>
+  <meta name="description" content="Private one-to-one video calls. No sign-up, no name, no call history.">
+  <title>Veil — Private video calls</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -15,94 +16,122 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="./" aria-label="CloseCall home"><span class="brand-mark">c</span> closecall</a>
+    <a class="brand" href="./" aria-label="Veil home"><span class="brand-mark">◇</span><span>Veil</span></a>
+    <nav class="top-nav" aria-label="Main navigation">
+      <a href="#how-it-works">How it works</a>
+      <a href="#privacy">Privacy</a>
+    </nav>
     <span class="top-note"><i></i> Private by design</span>
   </header>
 
-  <main id="home-view" class="hero-wrap">
-    <section class="hero-copy">
-      <div class="eyebrow"><span class="eyebrow-line"></span> FACE TO FACE, ANYWHERE</div>
-      <h1>Good conversations<br>deserve <span>privacy.</span></h1>
-      <p class="intro">A quiet space for one-to-one video calls. No account, no clutter — just you and the person you invite.</p>
-      <div class="action-panel">
-        <button class="primary-btn" id="create-room" type="button">
-          <span class="btn-icon">＋</span><span><strong>Create a room</strong><small>Start a private conversation</small></span><span class="btn-arrow">↗</span>
-        </button>
-        <div class="separator"><span></span> OR JOIN A ROOM <span></span></div>
+  <main id="home-view">
+    <section class="hero-wrap">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> NO SIGN-UP. NO NAME. NO HISTORY.</div>
+        <h1>Talk face to face.<br><span>Leave no name</span><br>behind.</h1>
+        <p class="intro">Private one-to-one video calls with nobody logging in. Make a room, send the other person a link and a code, and talk. When you hang up, the room is gone.</p>
+        <div class="trust-points"><span>✓ No account</span><span>✓ Two people only</span><span>✓ No recordings</span></div>
+      </div>
+      <section class="entry-card" aria-label="Create or join a private room">
+        <div class="entry-card-top"><span class="entry-icon">↗</span><div><strong>Start a private call</strong><small>We create a one-time room. Share the invite link and code.</small></div></div>
+        <button class="create-room-btn" id="create-room" type="button"><span>Create private room</span><b>→</b></button>
+        <div class="or-divider"><span></span> OR <span></span></div>
         <form id="join-form" class="join-form">
-          <label class="sr-only" for="invite-link">Room code or invitation link</label>
-          <input id="invite-link" name="invite" type="text" placeholder="Enter 5-character room code or paste invite link" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="join-help">
-          <button type="submit" class="join-btn">Join room <span>→</span></button>
-          <small id="join-help" class="join-help">You can join with the room code alone — no full link needed.</small>
+          <label for="invite-link">Got an invite? Enter the code</label>
+          <div class="join-input-row">
+            <input id="invite-link" name="invite" type="text" placeholder="Enter room code or paste invite link" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="join-help">
+            <button type="submit" class="join-btn">Join <span>→</span></button>
+          </div>
+          <small id="join-help" class="join-help">You can enter the room code or use your private invitation link.</small>
         </form>
-        <p class="fine-print"><span class="lock">⌑</span> Calls are designed for two people. You control when your camera and microphone are on.</p>
+        <div class="entry-foot"><span class="tiny-lock">⌑</span> A room is private to the two people invited.</div>
+      </section>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="visual-glow"></div><div class="visual-window">
+          <div class="visual-window-top"><i></i><i></i><i></i><span>PRIVATE ROOM</span></div>
+          <div class="visual-person"><div class="person-orbit"><div class="person-avatar">V</div></div><strong>Just you two.</strong><small>A quiet space to talk.</small></div>
+          <div class="visual-self"><span class="mini-avatar">G</span><small>Guest</small></div>
+          <div class="visual-call-controls"><i>♩</i><i>▣</i><i class="hangup">⌕</i></div>
+        </div>
+        <div class="floating-note"><span>✳</span><div><b>Nothing to keep</b><small>Room disappears when you leave</small></div></div>
       </div>
     </section>
 
-    <aside class="visual-panel" aria-label="Illustration of a private video call">
-      <div class="orb orb-one"></div><div class="orb orb-two"></div>
-      <div class="visual-label"><span class="live-dot"></span> YOUR PRIVATE SPACE</div>
-      <div class="call-preview">
-        <div class="preview-main">
-          <div class="avatar avatar-main">Y</div>
-          <span class="preview-name">You</span>
-          <span class="preview-status">Preview starts in the waiting room</span>
-        </div>
-        <div class="preview-small"><div class="avatar avatar-small">?</div><span>Guest</span></div>
-        <div class="preview-controls"><span>⌕</span><span>◉</span><span class="end-control">×</span></div>
+    <section class="steps-section" id="how-it-works">
+      <div class="section-heading"><span class="eyebrow">SIMPLE BY DESIGN</span><h2>Three steps, zero accounts</h2></div>
+      <div class="steps-grid">
+        <article class="step-card"><span class="step-number">01</span><h3>Create a room</h3><p>One tap makes a random room. It has no owner name and no profile attached.</p></article>
+        <article class="step-card"><span class="step-number">02</span><h3>Share link and code</h3><p>Send the invite link on any app, and the code on a different one. The room needs both when using a protected invite.</p></article>
+        <article class="step-card"><span class="step-number">03</span><h3>Talk, then it vanishes</h3><p>Only two people fit. When either leaves, the room and its link stop working.</p></article>
       </div>
-      <div class="floating-card"><span class="shield">✳</span><span><strong>Just two people</strong><small>A room made for privacy</small></span></div>
-      <div class="visual-caption">A little more personal.<br><strong>A lot less public.</strong></div>
-    </aside>
+    </section>
+
+    <section class="privacy-section" id="privacy">
+      <div class="section-heading"><span class="eyebrow">YOUR PRIVACY COMES FIRST</span><h2>Built to know as little as possible</h2></div>
+      <div class="privacy-grid">
+        <article><span class="privacy-symbol">◎</span><h3>No identity</h3><p>No email, phone number or username. Each person joins as a temporary guest.</p></article>
+        <article><span class="privacy-symbol">⌑</span><h3>Peer-to-peer media</h3><p>Video and audio are designed to travel directly between browsers when the network allows it.</p></article>
+        <article><span class="privacy-symbol">×</span><h3>No recordings</h3><p>No built-in recordings, chat logs or call history. Rooms expire automatically.</p></article>
+        <article><span class="privacy-symbol">↗</span><h3>Link plus code</h3><p>Keep your invite private. Share the room code separately from the invitation link.</p></article>
+      </div>
+      <p class="privacy-note">Connection setup uses a secure room service. Media routing may use a TURN relay when a direct connection is not possible.</p>
+    </section>
   </main>
 
   <main id="room-screen" class="room-shell" hidden>
     <div class="room-heading">
-      <div><p class="eyebrow">PRIVATE ROOM</p><h1>Your room is ready.</h1><p class="room-subtitle">Share the secure invite with one person to let them enter.</p></div>
-      <button class="subtle-btn" id="back-home" type="button">← Home</button>
+      <div><span class="room-kicker"><i></i> PRIVATE ROOM</span><h1>Your room is ready</h1><p class="room-subtitle">Send the link and the code to one person. Ideally on two different apps.</p></div>
+      <button class="subtle-btn" id="back-home" type="button">Cancel room</button>
     </div>
-    <section class="room-card">
-      <div class="room-topline"><span class="room-pill"><i></i> <span id="room-connection-status">Room session active</span></span><span id="room-role-label">Room host</span></div>
-      <div class="room-code-row"><div><small>ROOM CODE</small><strong id="room-code-display">--------</strong></div><div class="room-user"><span class="user-dot">●</span><span id="room-nickname">Guest</span></div></div>
-      <label class="invite-label" for="room-invite-link">SECURE INVITATION LINK</label>
-      <div class="invite-copy-row"><input id="room-invite-link" readonly><button id="copy-invite" type="button" class="copy-btn">Copy link</button></div>
-      <p class="room-expiry" id="room-expiry">Temporary private room</p>
-    </section>
-    <section class="video-call-panel">
-      <div class="call-toolbar"><div><span class="call-live-dot"></span><strong id="call-status">Waiting for the other person to join</strong></div><span id="peer-state">Waiting for participant</span></div>
-      <div class="video-grid">
-        <div class="video-tile remote-tile">
-          <video id="remote-video" autoplay playsinline></video>
-          <div class="video-placeholder" id="remote-placeholder"><span>◉</span><strong id="peer-name">Waiting for guest</strong><small>Remote video appears when connected</small></div>
-          <label>OTHER PERSON</label>
+    <div class="room-layout">
+      <section class="video-call-panel">
+        <div class="call-toolbar"><div><span class="call-live-dot"></span><strong id="call-status">Waiting for the other person to join</strong></div><span id="peer-state">Waiting for the other participant</span></div>
+        <div class="video-grid">
+          <div class="video-tile remote-tile">
+            <video id="remote-video" autoplay playsinline></video>
+            <div class="video-placeholder" id="remote-placeholder"><span class="person-outline">♙</span><strong id="peer-name">Guest</strong><small>Remote video appears here</small></div>
+            <label>GUEST</label>
+          </div>
+          <div class="video-tile local-tile">
+            <video id="local-video" autoplay muted playsinline></video>
+            <div class="video-placeholder" id="local-placeholder"><span class="person-outline">♙</span><strong>Your camera preview</strong><small>Check yourself before the other person joins</small></div>
+            <label>YOU · GUEST</label>
+          </div>
         </div>
-        <div class="video-tile local-tile">
-          <video id="local-video" autoplay muted playsinline></video>
-          <div class="video-placeholder" id="local-placeholder"><span>◎</span><strong>Your camera is off</strong><small>Enable camera and microphone to join the call</small></div>
-          <label>YOU</label>
+        <div class="call-controls">
+          <button id="mic-toggle" class="round-control mic-control" type="button" disabled aria-label="Mute microphone" title="Mute microphone">♩</button>
+          <button id="camera-toggle" class="round-control camera-control" type="button" disabled aria-label="Turn camera off" title="Turn camera off">▣</button>
+          <button id="switch-camera" class="round-control switch-control" type="button" disabled aria-label="Switch camera" title="Switch front or back camera">↻</button>
+          <button id="start-call" class="call-start-btn" type="button">Enable camera &amp; microphone</button>
         </div>
-      </div>
-      <div class="call-controls">
-        <button id="start-call" class="call-start-btn" type="button">Enable camera &amp; microphone</button>
-        <button id="camera-toggle" type="button" disabled>Turn camera off</button>
-        <button id="switch-camera" type="button" disabled aria-label="Switch front or back camera">↻ Switch camera</button>
-        <button id="mic-toggle" type="button" disabled>Mute microphone</button>
-      </div>
-      <p class="call-note">Your browser will ask for camera and microphone permission. Use HTTPS. Some networks require a TURN relay for calls to connect.</p>
-    </section>
-    <div class="room-actions"><span>Leaving ends this private room for everyone.</span><button id="leave-room" type="button" class="leave-btn">Leave room <span>×</span></button></div>
+        <p class="call-note">Your camera and microphone stay off until you turn them on.</p>
+      </section>
+
+      <aside class="room-card">
+        <div class="room-card-heading"><span class="room-card-icon">↗</span><div><h2>Invite someone</h2><p>Only one other person can join this room.</p></div></div>
+        <div class="invite-block">
+          <label class="invite-label" for="room-invite-link">1 · INVITE LINK</label>
+          <div class="invite-copy-row"><input id="room-invite-link" readonly aria-label="Invitation link"><button id="copy-invite" type="button" class="copy-btn">Copy link</button></div>
+        </div>
+        <div class="invite-block code-block">
+          <div class="code-title"><span class="invite-label">2 · ACCESS CODE</span><span id="room-role-label">Room host</span></div>
+          <div class="code-copy-row"><strong id="room-code-display">-----</strong><button id="copy-code" type="button" class="copy-code-btn">Copy code</button></div>
+        </div>
+        <div class="room-waiting"><span class="waiting-dot"></span><strong id="room-connection-status">Waiting for the other person to join</strong></div>
+        <p class="room-expiry" id="room-expiry">The room allows two people only. It expires after 30 minutes if nobody joins, and is erased when the call ends.</p>
+        <div class="room-security"><span>⌑</span><p>Keep your invitation private. Never post your room link or code publicly.</p></div>
+      </aside>
+    </div>
+    <div class="room-actions"><span>Closing this tab or ending the call erases the room. Nothing is recorded.</span><button id="leave-room" type="button" class="leave-btn"><span>⌕</span> End &amp; erase room</button></div>
   </main>
 
-  <footer><span>© <span id="year"></span> CloseCall</span><span>Simple. Private. Personal.</span></footer>
+  <footer class="site-footer"><span>Veil · calls that leave no trace</span><div><a href="#privacy">Privacy</a><a href="#how-it-works">How it works</a></div></footer>
 
   <dialog id="nickname-dialog" class="modal">
     <form method="dialog" id="nickname-form">
       <button class="modal-close" value="cancel" aria-label="Close">×</button>
-      <div class="modal-icon">✳</div>
-      <p class="eyebrow">BEFORE YOU ENTER</p>
-      <h2>Ready to join?</h2>
-      <p class="modal-copy">CloseCall will assign a temporary nickname automatically for this conversation.</p>
-      <p class="modal-copy generated-note">A secure temporary nickname will be generated automatically. You can enter without creating an account.</p>
+      <div class="modal-icon">✳</div><p class="eyebrow">BEFORE YOU ENTER</p><h2>Ready to join?</h2>
+      <p class="modal-copy">No account or personal details needed. A temporary guest session will be created for this room.</p>
       <button class="primary-btn modal-submit" id="continue-room" value="default">Continue <span>→</span></button>
       <p class="modal-error" id="modal-error" role="alert"></p>
     </form>
