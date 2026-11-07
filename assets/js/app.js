@@ -119,19 +119,19 @@
     if (remoteVideo) remoteVideo.srcObject = null;
     $('#local-placeholder').hidden = false;
     $('#remote-placeholder').hidden = false;
-    $('#camera-toggle').textContent = 'Turn camera off';
-    $('#mic-toggle').textContent = 'Mute microphone';
+    $('#camera-toggle').textContent = '▣'; $('#camera-toggle').title = 'Turn camera off';
+    $('#mic-toggle').textContent = '♩'; $('#mic-toggle').title = 'Mute microphone';
     $('#start-call').disabled = false;
     $('#start-call').textContent = 'Enable camera & microphone';
-    $('#camera-toggle').disabled = true; $('#mic-toggle').disabled = true; $('#switch-camera').disabled = true;
+    $('#camera-toggle').disabled = true; $('#mic-toggle').disabled = true; $('#switch-camera').disabled = true; document.body.classList.remove('call-active');
   }
   function clearSession() {
     stopTimers(); stopMedia(); currentSession = null; sessionStorage.removeItem(SESSION_KEY);
   }
-  function showHome() { roomScreen.hidden = true; home.hidden = false; document.body.classList.remove('in-room'); }
+  function showHome() { roomScreen.hidden = true; home.hidden = false; document.body.classList.remove('in-room','call-active'); }
   function setCallStatus(message) { $('#call-status').textContent = message; }
   function showRoom(session) {
-    saveSession(session); home.hidden = true; roomScreen.hidden = false; document.body.classList.add('in-room');
+    saveSession(session); home.hidden = true; roomScreen.hidden = false; document.body.classList.add('in-room'); document.body.classList.remove('call-active');
     $('#room-code-display').textContent = session.room_code;
     $('#room-nickname').textContent = session.nickname || 'Guest';
     $('#room-role-label').textContent = session.slot === 1 ? 'Room host' : 'Invited guest';
@@ -201,11 +201,13 @@
       if (!remoteStream.getTracks().some(t => t.id === event.track.id)) remoteStream.addTrack(event.track);
       $('#remote-video').srcObject = remoteStream;
       $('#remote-placeholder').hidden = true;
+      document.body.classList.add('call-active');
+      $('#remote-video').play().catch(() => {});
       setCallStatus('Live connection established');
     };
     peerConnection.onconnectionstatechange = () => {
       const state = peerConnection?.connectionState;
-      if (state === 'connected') setCallStatus('Connected securely peer-to-peer');
+      if (state === 'connected') { setCallStatus('Connected securely peer-to-peer'); document.body.classList.add('call-active'); }
       else if (state === 'connecting') setCallStatus('Connecting video and audio…');
       else if (state === 'failed') setCallStatus('Direct connection failed. This network may require a TURN relay.');
       else if (state === 'disconnected') setCallStatus('Connection interrupted — trying to reconnect');
@@ -367,12 +369,17 @@
   $('#camera-toggle').addEventListener('click', () => {
     if (!localStream) return;
     const track = localStream.getVideoTracks()[0]; if (!track) return;
-    track.enabled = !track.enabled; $('#camera-toggle').textContent = track.enabled ? 'Turn camera off' : 'Turn camera on';
+    track.enabled = !track.enabled; $('#camera-toggle').textContent = '▣'; $('#camera-toggle').title = track.enabled ? 'Turn camera off' : 'Turn camera on'; $('#camera-toggle').setAttribute('aria-label', $('#camera-toggle').title);
   });
   $('#mic-toggle').addEventListener('click', () => {
     if (!localStream) return;
     const track = localStream.getAudioTracks()[0]; if (!track) return;
-    track.enabled = !track.enabled; $('#mic-toggle').textContent = track.enabled ? 'Mute microphone' : 'Unmute microphone';
+    track.enabled = !track.enabled; $('#mic-toggle').textContent = '♩'; $('#mic-toggle').title = track.enabled ? 'Mute microphone' : 'Unmute microphone'; $('#mic-toggle').setAttribute('aria-label', $('#mic-toggle').title);
+  });
+  $('#copy-code').addEventListener('click', async () => {
+    const code = $('#room-code-display').textContent.trim();
+    try { await navigator.clipboard.writeText(code); notify('Room code copied.'); }
+    catch { notify('Could not copy automatically. Select the code and copy it.', true); }
   });
   $('#copy-invite').addEventListener('click', async () => {
     const v = $('#room-invite-link').value; if (!v || v.startsWith('Only the host')) return;
