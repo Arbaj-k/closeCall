@@ -322,6 +322,42 @@
       notify('Could not switch camera: ' + err.message, true);
     }
   }
+  function enableDraggableSelfPreview() {
+    const preview = $('.local-tile'), stage = $('.video-grid');
+    if (!preview || !stage) return;
+    preview.style.touchAction = 'none';
+    preview.style.cursor = 'grab';
+    let dragging = false, startX = 0, startY = 0, originX = 0, originY = 0;
+    preview.addEventListener('pointerdown', event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      const sr = stage.getBoundingClientRect(), r = preview.getBoundingClientRect();
+      preview.style.left = (r.left - sr.left) + 'px';
+      preview.style.top = (r.top - sr.top) + 'px';
+      preview.style.right = 'auto'; preview.style.bottom = 'auto';
+      dragging = true; startX = event.clientX; startY = event.clientY;
+      originX = r.left - sr.left; originY = r.top - sr.top;
+      preview.style.cursor = 'grabbing';
+      preview.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    });
+    preview.addEventListener('pointermove', event => {
+      if (!dragging) return;
+      const maxX = Math.max(0, stage.clientWidth - preview.offsetWidth);
+      const maxY = Math.max(0, stage.clientHeight - preview.offsetHeight);
+      preview.style.left = Math.min(maxX, Math.max(0, originX + event.clientX - startX)) + 'px';
+      preview.style.top = Math.min(maxY, Math.max(0, originY + event.clientY - startY)) + 'px';
+    });
+    const stop = () => { dragging = false; preview.style.cursor = 'grab'; };
+    preview.addEventListener('pointerup', stop);
+    preview.addEventListener('pointercancel', stop);
+    window.addEventListener('resize', () => {
+      const maxX = Math.max(0, stage.clientWidth - preview.offsetWidth);
+      const maxY = Math.max(0, stage.clientHeight - preview.offsetHeight);
+      const x = parseFloat(preview.style.left), y = parseFloat(preview.style.top);
+      if (Number.isFinite(x)) preview.style.left = Math.min(maxX, x) + 'px';
+      if (Number.isFinite(y)) preview.style.top = Math.min(maxY, y) + 'px';
+    });
+  }
   async function startCall() {
     if (!currentSession || localStream) return;
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -378,6 +414,7 @@
     catch (err) { if (!dialog.open) dialog.showModal(); error.textContent = err.message; }
     finally { setBusy(false); }
   });
+  enableDraggableSelfPreview();
   $('#start-call').addEventListener('click', startCall);
   $('#switch-camera').addEventListener('click', () => switchCamera().catch(e => notify('Camera switch failed: ' + e.message, true)));
   $('#camera-toggle').addEventListener('click', () => {
