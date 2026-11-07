@@ -198,3 +198,16 @@ button{touch-action:manipulation}
 @media(max-width:390px){
   body.call-active .call-controls .switch-control{width:auto;min-width:64px;min-height:42px}
 }
+
+/* Tall, narrow, draggable self-view picture-in-picture */
+.video-grid{position:relative;overflow:hidden}
+.local-tile{width:clamp(112px,14vw,156px);height:auto;aspect-ratio:3/5;min-height:0;max-height:62%;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;z-index:5;box-shadow:0 12px 34px #000b;border:1px solid #ffffff45}
+.local-tile:active{cursor:grabbing}
+.local-tile video{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.local-tile label{pointer-events:none}
+@media(max-width:650px){
+  body.call-active .local-tile{width:clamp(88px,25vw,116px);min-width:0;max-width:116px;height:auto;aspect-ratio:3/5;max-height:58%;right:10px;bottom:10px}
+}
+@media(max-width:380px){
+  body.call-active .local-tile{width:86px;min-width:0;max-width:86px;aspect-ratio:3/5}
+}
