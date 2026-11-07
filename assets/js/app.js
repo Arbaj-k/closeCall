@@ -281,28 +281,42 @@
     if (!localStream) return;
     const currentTrack = localStream.getVideoTracks()[0];
     if (!currentTrack) return;
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const cameras = devices.filter(device => device.kind === 'videoinput');
-    if (cameras.length < 2) { notify('Only one camera is available on this device.', true); return; }
-    const currentId = currentTrack.getSettings().deviceId;
-    const currentIndex = cameras.findIndex(device => device.deviceId === currentId);
-    const nextCamera = cameras[(currentIndex + 1 + cameras.length) % cameras.length];
-    const nextStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: nextCamera.deviceId ? { deviceId: { exact: nextCamera.deviceId } } :
-        { facingMode: currentTrack.getSettings().facingMode === 'environment' ? 'user' : 'environment' }
-    });
+    const currentFacing = currentTrack.getSettings().facingMode;
+    const targetFacing = currentFacing === 'environment' ? 'user' : 'environment';
+    let nextStream;
+    // Prefer an explicit front/back request on phones; fall back to cycling
+    // enumerated cameras for browsers that do not honor facingMode.
+    try {
+      nextStream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { exact: targetFacing }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+    } catch (facingError) {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cameras = devices.filter(device => device.kind === 'videoinput');
+      const currentId = currentTrack.getSettings().deviceId;
+      const currentIndex = cameras.findIndex(device => device.deviceId === currentId);
+      const nextCamera = cameras.length > 1 ? cameras[(currentIndex + 1 + cameras.length) % cameras.length] : null;
+      if (!nextCamera) {
+        notify('No second camera was found. Check your phone camera permissions and device settings.', true);
+        return;
+      }
+      nextStream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { deviceId: { exact: nextCamera.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+    }
     const nextTrack = nextStream.getVideoTracks()[0];
     try {
       const sender = peerConnection?.getSenders().find(item => item.track?.kind === 'video');
       if (sender) await sender.replaceTrack(nextTrack);
-      const oldStream = localStream;
-      oldStream.removeTrack(currentTrack);
-      oldStream.addTrack(nextTrack);
+      localStream.removeTrack(currentTrack);
+      localStream.addTrack(nextTrack);
       $('#local-video').srcObject = localStream;
       currentTrack.stop();
-      nextStream.getTracks().filter(track => track !== nextTrack).forEach(track => track.stop());
-      notify('Camera switched.');
+      const facing = nextTrack.getSettings().facingMode;
+      const label = facing === 'environment' ? 'Back camera' : facing === 'user' ? 'Front camera' : 'Camera';
+      notify(label + ' enabled.');
     } catch (err) {
       nextStream.getTracks().forEach(track => track.stop());
       notify('Could not switch camera: ' + err.message, true);
