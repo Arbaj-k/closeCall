@@ -54,6 +54,7 @@
     if (!response.ok || data.ok === false) {
       const messages = {
         RATE_LIMITED: 'Too many rooms created from this network. Try again later.',
+        JOIN_RATE_LIMITED: 'Too many join attempts from this network. Wait 15 minutes and try again.',
         INVALID_INVITE: 'This room code or invitation is invalid.',
         ROOM_FULL: 'This room already has two participants.',
         ROOM_EXPIRED: 'This room has expired or ended.',
