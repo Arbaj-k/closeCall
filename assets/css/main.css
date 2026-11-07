@@ -21,3 +21,59 @@
 .call-controls .call-start-btn{border-color:#b9adff;background:#a99bff;color:#171329}
 .call-note{font-size:10px;line-height:1.6;text-align:center;color:#858ea3;margin:13px 3px 0}
 @media(max-width:540px){.video-call-panel{padding:11px}.video-grid{grid-template-columns:1fr}.video-tile{aspect-ratio:16/9;min-height:190px}.call-toolbar{align-items:flex-start;flex-direction:column;gap:7px}.call-controls button{flex:1;min-width:120px}}
+
+/* Veil-inspired private call layout */
+.topbar{height:66px;border:0;background:#0d1013;padding:0 clamp(18px,4vw,56px)}
+.brand-mark{background:transparent;color:#65dfbd;border:2px solid #65dfbd;border-radius:50%;font-size:17px;width:27px;height:27px}
+.brand{font-size:18px;letter-spacing:-.3px}
+.top-note{color:#aab0b8}
+body{background:#0d1013}
+.room-shell{width:min(1440px,96%);min-height:calc(100vh - 110px);padding:24px 0 28px}
+.room-heading{margin-bottom:14px}
+.room-heading h1{font-size:clamp(24px,3vw,34px);letter-spacing:-1.2px}
+.room-heading .eyebrow{color:#67dfbd}
+.room-card{background:#171b20;border:1px solid #2b3138;border-radius:18px;box-shadow:none;padding:20px 22px}
+.room-topline{color:#aeb4bc}
+.room-code-row{padding:14px 0;margin-bottom:14px}
+.room-code-row strong{font-size:27px;letter-spacing:7px}
+.invite-copy-row input{background:#0d1114;border-color:#343b43;border-radius:12px;padding:15px}
+.copy-btn{background:#61dfbd;color:#08241d;border-radius:12px;padding:14px 22px}
+.video-call-panel{margin-top:14px;padding:14px;background:#171b20;border:1px solid #2b3138;border-radius:18px;box-shadow:none}
+.call-toolbar{padding:3px 4px 12px}
+.call-toolbar>div{color:#e4e8eb}
+.call-live-dot{background:#61dfbd;box-shadow:0 0 12px #61dfbd77}
+.video-grid{display:block;position:relative}
+.video-tile{border:1px solid #30373f;background:#101417;border-radius:15px}
+.remote-tile{width:100%;height:min(65vh,720px);min-height:350px;aspect-ratio:auto}
+.remote-tile video{object-fit:cover}
+.local-tile{position:absolute;right:18px;bottom:18px;width:min(19%,230px);min-width:145px;height:auto;aspect-ratio:16/10;min-height:0;z-index:2;border-radius:13px;box-shadow:0 10px 35px #0008}
+.local-tile video{object-fit:cover}
+.video-placeholder{background:#171c21;color:#aab1b8}
+.video-placeholder span{font-size:42px;color:#aeb5bd}
+.video-placeholder strong{font-size:14px}
+.video-placeholder small{font-size:12px}
+.video-tile label{background:#080b0dc9}
+.call-controls{gap:12px;padding:16px 0 4px}
+.call-controls button{width:54px;height:54px;min-width:54px;flex:0 0 54px;padding:0;border-radius:50%;background:#1b2026;border:1px solid #39414a;font-size:0;display:grid;place-items:center}
+.call-controls button::first-letter{font-size:20px}
+.call-controls .call-start-btn{width:auto;flex:0 1 auto;padding:0 22px;border-radius:28px;background:#61dfbd;border-color:#61dfbd;color:#08241d;font-size:12px}
+.call-controls #camera-toggle,.call-controls #mic-toggle,.call-controls #switch-camera{font-size:0;position:relative}
+.call-controls #camera-toggle::after{content:"▣";font-size:20px}
+.call-controls #mic-toggle::after{content:"♩";font-size:22px}
+.call-controls #switch-camera::after{content:"↻";font-size:25px}
+.call-note{text-align:center;color:#858e96}
+.room-actions{margin-top:12px;color:#89929b}
+.leave-btn{background:#c93648;border-color:#c93648;border-radius:28px;padding:14px 24px}
+.subtle-btn{background:#171c20;border-color:#343b43}
+@media(max-width:700px){
+ .room-shell{width:94%;padding:18px 0 22px}
+ .room-heading{align-items:center}
+ .room-heading h1{font-size:25px}
+ .room-card{padding:16px}
+ .remote-tile{height:58vh;min-height:300px}
+ .local-tile{right:10px;bottom:10px;width:31%;min-width:110px}
+ .call-controls{gap:9px}
+ .call-controls button{width:48px;height:48px;min-width:48px;flex-basis:48px}
+ .call-controls .call-start-btn{font-size:11px}
+ .room-actions{align-items:center}
+}
