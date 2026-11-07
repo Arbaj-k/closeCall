@@ -42,7 +42,7 @@
   let heartbeatTimer = null, signalTimer = null, statusTimer = null;
   let localStream = null, peerConnection = null, remoteStream = null;
   let offerStarted = false, makingOffer = false, signalBusy = false, statusBusy = false;
-  let queuedIce = [];
+  let queuedIce = [], pendingOffer = null;
 
   if (year) year.textContent = new Date().getFullYear();
   function notify(message, isError = false) {
@@ -113,7 +113,7 @@
     if (peerConnection) { peerConnection.ontrack = null; peerConnection.onicecandidate = null; peerConnection.close(); }
     peerConnection = null;
     if (localStream) localStream.getTracks().forEach(t => t.stop());
-    localStream = null; remoteStream = null; queuedIce = []; offerStarted = false; makingOffer = false;
+    localStream = null; remoteStream = null; queuedIce = []; pendingOffer = null; offerStarted = false; makingOffer = false;
     const localVideo = $('#local-video'), remoteVideo = $('#remote-video');
     if (localVideo) localVideo.srcObject = null;
     if (remoteVideo) remoteVideo.srcObject = null;
@@ -243,6 +243,9 @@
       return;
     }
     if (signal.signal_type === 'offer' && currentSession.slot === 2) {
+      // Do not answer an offer until local media exists; otherwise the answer
+      // has no audio/video transceivers and the remote video can never arrive.
+      if (!localStream) { pendingOffer = signal; setCallStatus('Offer received. Enable camera & microphone to connect.'); return; }
       const pc = await createPeerConnection();
       await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
       await drainIce();
@@ -286,6 +289,10 @@
       $('#camera-toggle').textContent = 'Turn camera off';
       $('#mic-toggle').textContent = 'Mute microphone';
       if (currentSession.slot === 2) await createPeerConnection();
+      if (currentSession.slot === 2 && pendingOffer) {
+        const offer = pendingOffer; pendingOffer = null;
+        await handleSignal(offer);
+      }
       await checkPeer();
       setCallStatus('Camera and microphone ready. Waiting for peer connection…');
       notify('Camera and microphone enabled.');
