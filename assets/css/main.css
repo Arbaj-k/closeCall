@@ -270,3 +270,35 @@ button{touch-action:manipulation}
   }
   body.call-active .leave-btn{min-height:48px}
 }
+
+
+/* Final mobile call polish: no rotated selfie, compact controls, balanced bottom action */
+@media(max-width:650px){
+  body.call-active .local-tile video,
+  body.call-active #local-video{
+    transform:none!important;rotate:none!important;scale:none!important;
+    object-fit:cover;object-position:center center
+  }
+  body.call-active .call-controls #mic-toggle,
+  body.call-active .call-controls #camera-toggle,
+  body.call-active .call-controls #switch-camera{
+    color:#f3f7f6;font-size:0!important;overflow:hidden
+  }
+  body.call-active .call-controls #mic-toggle::before{content:"♫";font-size:23px}
+  body.call-active .call-controls #camera-toggle::before{content:"▣";font-size:21px}
+  body.call-active .call-controls #switch-camera::before{content:"↻";font-size:25px}
+  body.call-active .call-controls #switch-camera span{display:none!important}
+  body.call-active .call-controls button{box-shadow:0 5px 16px #0005}
+  body.call-active .call-controls #mic-toggle{background:#183b36;border-color:#3d9d89}
+  body.call-active .room-actions{
+    margin:12px 0 0!important;padding:0 2px!important;
+    display:flex;justify-content:center
+  }
+  body.call-active .leave-btn{
+    width:100%!important;max-width:none!important;min-height:50px!important;
+    border-radius:14px!important;letter-spacing:.1px;
+    box-shadow:0 7px 20px #c9364833
+  }
+  body.call-active .video-grid{border-radius:18px}
+  body.call-active .local-tile{border:1.5px solid #ffffff80;box-shadow:0 8px 25px #0009}
+}
