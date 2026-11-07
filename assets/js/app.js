@@ -390,10 +390,25 @@
   $('#back-home').addEventListener('click', () => notify('Use Leave room to securely end this session.'));
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && currentSession) heartbeat(); });
   dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
+  let restoredSession = null;
   try {
     const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
-    if (saved?.room_id && saved?.participant_token && saved?.room_code) showRoom(saved);
+    if (saved?.room_id && saved?.participant_token && saved?.room_code) {
+      restoredSession = saved;
+      showRoom(saved);
+    }
   } catch { sessionStorage.removeItem(SESSION_KEY); }
   const params = new URLSearchParams(location.search);
-  if (params.has('room') || params.has('token')) { const invitation = location.href; showHome(); openNickname('join', invitation); }
+  if (params.has('room') || params.has('token')) {
+    const inviteCode = (params.get('room') || '').trim().toUpperCase();
+    // Do not consume the second room slot when this tab already owns that room session.
+    if (restoredSession && restoredSession.room_code === inviteCode) {
+      notify('You are already in this room on this tab.');
+    } else {
+      const invitation = location.href;
+      if (restoredSession) clearSession();
+      showHome();
+      openNickname('join', invitation);
+    }
+  }
 })();
